@@ -5,39 +5,40 @@ const wss = new WebSocket.WebSocketServer({port:8080}, ()=> {
 	console.log('server started')
 })
 
-//Object that stores player data 
+var playerList=[];
+var bulletList=[];
+ 
 var playersData = {
 	"type" : "playerData"
 }
 
-//=====WEBSOCKET FUNCTIONS======
-
-//Websocket function that managages connection with clients
 wss.on('connection', function connection(client){
 
-	//Create Unique User ID for player
-	client.id = uuid();
+	client.id = uuid();	
 
 	console.log(`Client ${client.id} Connected!`)
 	
 	var currentClient = playersData[""+client.id]
+	playerList.push(currentClient);
 
-	//Send default client data back to client for reference
 	client.send(`{"id": "${client.id}"}`)
 
-	//Method retrieves message from client
 	client.on('message', (data) => {
 		var dataJSON = JSON.parse(data)
-		
-		console.log("Player Message")
-		console.log(dataJSON)
+		console.log(playerList.length)
+		console.log(playersData)
+		playerList.forEach(player => {
+			console.log("Player Message")
+			//console.log(dataJSON)
+			console.log(client.id)
+		});
 		
 	})
 
-	//Method notifies when client disconnects
 	client.on('close', () => {
 		console.log('This Connection Closed!')
 		console.log("Removing Client: " + client.id)
+		
 	})
 
 })
